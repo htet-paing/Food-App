@@ -27,6 +27,11 @@ class FoodProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  deleteFood(Food food) {
+    _foodList.removeWhere((_food) => _food.id == food.id);
+    notifyListeners();
+  }
+
 
 
 }

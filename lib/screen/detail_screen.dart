@@ -1,4 +1,6 @@
+import 'package:cwhp_flutter/model/food.dart';
 import 'package:cwhp_flutter/provider/food_provider.dart';
+import 'package:cwhp_flutter/service/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +10,12 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FoodProvider foodProvider = Provider.of<FoodProvider>(context);
+    
+    _onFoodDeleted(Food food) {
+      Navigator.pop(context);
+      foodProvider.deleteFood(food);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(foodProvider.currentFood.name),
@@ -59,9 +67,7 @@ class DetailScreen extends StatelessWidget {
             child: Icon(Icons.delete),
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
-            onPressed: ()  {
-             
-            },
+            onPressed: () => deleteFood(foodProvider.currentFood, _onFoodDeleted)
           ),
           SizedBox(height: 10),
           FloatingActionButton(   

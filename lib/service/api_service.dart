@@ -6,6 +6,7 @@ import 'package:cwhp_flutter/model/user.dart';
 import 'package:cwhp_flutter/provider/auth_provider.dart';
 import 'package:cwhp_flutter/provider/food_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart'as path;
 import 'package:uuid/uuid.dart';
@@ -126,6 +127,16 @@ Future<void> getFoods(FoodProvider foodProvider) async {
       await documentRef.set(food.toJson());
       foodUploaded(food);
     }
+  }
+
+  Future<void> deleteFood(Food food, Function foodDeleted) async {
+    if (food.image != null) {
+      StorageReference storageReference = await FirebaseStorage.instance.getReferenceFromUrl(food.image);
+      print(storageReference.path);
+      await storageReference.delete();
+    }
+    await FirebaseFirestore.instance.collection('Foods').doc(food.id).delete();
+    foodDeleted(food);
   }
 
 
