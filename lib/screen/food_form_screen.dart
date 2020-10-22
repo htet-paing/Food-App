@@ -22,23 +22,26 @@ class _FoodFormScreenState extends State<FoodFormScreen> {
     String _imageUrl;
     File _imageFile;
     bool _isLoading = false;
+    bool _isInit = true;
 
 
 
 
     @override
-    void initState() { 
-      super.initState();
-      FoodProvider foodProvider = Provider.of<FoodProvider>(context, listen: false);
-      if (foodProvider.currentFood != null) {
-      _currentFood = foodProvider.currentFood;
-      _subingredients.addAll(_currentFood.subIngredients);
-      _imageUrl = _currentFood.image;
-      
-      }else {
-        _currentFood = new Food();
+    void didChangeDependencies() {
+      if (_isInit) {
+        FoodProvider foodProvider = Provider.of<FoodProvider>(context, listen: false);
+        if (foodProvider.currentFood != null) {
+        _currentFood = foodProvider.currentFood;
+        _subingredients.addAll(_currentFood.subIngredients);
+        _imageUrl = _currentFood.image;
+        
+        }else {
+          _currentFood = new Food();
+        }
       }
-      
+      _isInit = false;
+      super.didChangeDependencies();
     }
 
     Widget _showImage() {
@@ -120,11 +123,13 @@ class _FoodFormScreenState extends State<FoodFormScreen> {
         _isLoading = true;
       });
       _currentFood.subIngredients = _subingredients;
-      uploadFoodAndImage(_currentFood, widget.isUpdating, _imageFile).then((_) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
+      uploadFoodAndImage(_currentFood, widget.isUpdating, _imageFile, _onFoodUploaded);
+    }
+
+    _onFoodUploaded(Food food) {
+      FoodProvider foodProvider = Provider.of<FoodProvider>(context, listen: false);
+      foodProvider.addFood(food);
+      Navigator.pop(context);
     }
   
   
@@ -194,10 +199,7 @@ class _FoodFormScreenState extends State<FoodFormScreen> {
                 validator: (value) {
                   if (value.isEmpty) {
                     return 'Please enter provide value';
-                  }
-                  if (value.length < 10) {
-                    return 'The description should be at least 10 character';
-                  }
+                  }                 
                   return null;
                 },
               ),

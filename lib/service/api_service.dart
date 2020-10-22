@@ -63,7 +63,9 @@ Future<User> initializeCurrentUser() async{
 }
 
 Future<void> getFoods(FoodProvider foodProvider) async {
-  Query snapshot = FirebaseFirestore.instance.collection('Foods');
+  Query snapshot = FirebaseFirestore.instance
+  .collection('Foods')
+  .orderBy("createdAt", descending: true);
   List<Food> _foodList = [];
 
   await snapshot.get().then((querySnapshot) async {
@@ -75,7 +77,7 @@ Future<void> getFoods(FoodProvider foodProvider) async {
     foodProvider.foodList = _foodList;  
 }
 
- Future<void> uploadFoodAndImage(Food food,bool isUpdating, File localImage) async{
+ Future<void> uploadFoodAndImage(Food food,bool isUpdating, File localImage, Function foodUploaded) async{
     if (localImage != null) {
       print("Updating Image");
 
@@ -95,14 +97,14 @@ Future<void> getFoods(FoodProvider foodProvider) async {
       print("Download URL : $url");
       
       //Upload Food
-      _uploadFood(food, isUpdating, imageUrl: url);
+      _uploadFood(food, isUpdating, foodUploaded, imageUrl: url);
     }else {
       print("....Skipping image Upload");
-      _uploadFood(food, isUpdating);
+      _uploadFood(food, isUpdating, foodUploaded);
     }
   }
 
-  _uploadFood(Food food, bool isUpdating, {String imageUrl}) async {
+  _uploadFood(Food food, bool isUpdating, Function foodUploaded, {String imageUrl}) async {
     CollectionReference foodRef = FirebaseFirestore.instance.collection('Foods');
     if (imageUrl != null) {
       food.image = imageUrl;
@@ -112,6 +114,7 @@ Future<void> getFoods(FoodProvider foodProvider) async {
       //Update Food
       food.updatedAt = Timestamp.now();
       await foodRef.doc(food.id).update(food.toJson());
+      foodUploaded(food);
       print("Updated Food with ID : ${food.id}");
     }else {
       //Create Food
@@ -121,5 +124,8 @@ Future<void> getFoods(FoodProvider foodProvider) async {
       print("Uploaded Food SuccessFully : ${food.toString()}");
       
       await documentRef.set(food.toJson());
+      foodUploaded(food);
     }
   }
+
+

@@ -22,6 +22,11 @@ class FoodProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  addFood(Food food) {
+    _foodList.insert(0, food);
+    notifyListeners();
+  }
+
 
 
 }

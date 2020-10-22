@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _isLoading = true;
       });
-      FoodProvider foodProvider = Provider.of<FoodProvider>(context, listen: false);
+      FoodProvider foodProvider = Provider.of<FoodProvider>(context);
       getFoods(foodProvider).then((_) {
         setState(() {
           _isLoading = false;

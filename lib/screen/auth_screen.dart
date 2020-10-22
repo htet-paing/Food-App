@@ -62,7 +62,7 @@ class AuthScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            'HP NOTE',
+                            'HP FOOD',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 30,                          
